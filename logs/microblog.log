@@ -1,0 +1,103 @@
+2021-07-30 14:10:29,307 ERROR: Exception on /user/based [GET] [in /Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py:1892]
+Traceback (most recent call last):
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1821, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_login/utils.py", line 272, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/artem/environments/website/app/routes.py", line 139, in user
+    next_url=next_url, prev_url=prev_url, form=form)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/templating.py", line 140, in render_template
+    ctx.app,
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/templating.py", line 120, in _render
+    rv = template.render(context)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/jinja2/environment.py", line 1090, in render
+    self.environment.handle_exception()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/artem/environments/website/app/templates/user.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/artem/environments/website/app/templates/base.html", line 1, in top-level template code
+    {% extends 'bootstrap/base.html' %}
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 1, in top-level template code
+    {% block doc -%}
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 4, in block "doc"
+    {%- block html %}
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 20, in block "html"
+    {% block body -%}
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 23, in block "body"
+    {% block content -%}
+  File "/Users/artem/environments/website/app/templates/base.html", line 48, in block "content"
+    {% block app_content %}{% endblock %}
+  File "/Users/artem/environments/website/app/templates/user.html", line 11, in block "app_content"
+    <p>Last seen on: {{ moment(user.last_seen).format('LLL') }}</p>
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_moment/__init__.py", line 187, in format
+    return self._render("format", format=(fmt or ''), refresh=refresh)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_moment/__init__.py", line 161, in _render
+    t = self._timestamp_as_iso_8601(self.timestamp)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_moment/__init__.py", line 157, in _timestamp_as_iso_8601
+    return timestamp.strftime('%Y-%m-%dT%H:%M:%S' + tz)
+AttributeError: 'str' object has no attribute 'strftime'
+2021-07-30 14:10:56,149 INFO: Microblog startup [in /Users/artem/environments/website/app/__init__.py:52]
+2021-07-30 14:10:59,441 ERROR: Exception on /user/based [GET] [in /Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py:1892]
+Traceback (most recent call last):
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1821, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_login/utils.py", line 272, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/artem/environments/website/app/routes.py", line 139, in user
+    next_url=next_url, prev_url=prev_url, form=form)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/templating.py", line 140, in render_template
+    ctx.app,
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/templating.py", line 120, in _render
+    rv = template.render(context)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/jinja2/environment.py", line 1090, in render
+    self.environment.handle_exception()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/artem/environments/website/app/templates/user.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/artem/environments/website/app/templates/base.html", line 1, in top-level template code
+    {% extends 'bootstrap/base.html' %}
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 1, in top-level template code
+    {% block doc -%}
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 4, in block "doc"
+    {%- block html %}
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 20, in block "html"
+    {% block body -%}
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 23, in block "body"
+    {% block content -%}
+  File "/Users/artem/environments/website/app/templates/base.html", line 48, in block "content"
+    {% block app_content %}{% endblock %}
+  File "/Users/artem/environments/website/app/templates/user.html", line 11, in block "app_content"
+    <p>Last seen on: {{ moment(user.last_seen).format('LLL') }}</p>
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_moment/__init__.py", line 187, in format
+    return self._render("format", format=(fmt or ''), refresh=refresh)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_moment/__init__.py", line 161, in _render
+    t = self._timestamp_as_iso_8601(self.timestamp)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_moment/__init__.py", line 157, in _timestamp_as_iso_8601
+    return timestamp.strftime('%Y-%m-%dT%H:%M:%S' + tz)
+AttributeError: 'str' object has no attribute 'strftime'

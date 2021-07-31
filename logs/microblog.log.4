@@ -1,0 +1,87 @@
+2021-07-30 13:33:08,473 INFO: Microblog startup [in /Users/artem/environments/website/app/__init__.py:51]
+2021-07-30 13:35:23,783 INFO: Microblog startup [in /Users/artem/environments/website/app/__init__.py:50]
+2021-07-30 13:40:47,773 INFO: Microblog startup [in /Users/artem/environments/website/app/__init__.py:50]
+2021-07-30 13:42:06,634 INFO: Microblog startup [in /Users/artem/environments/website/app/__init__.py:50]
+2021-07-30 13:45:59,156 INFO: Microblog startup [in /Users/artem/environments/website/app/__init__.py:50]
+2021-07-30 13:46:01,286 INFO: Microblog startup [in /Users/artem/environments/website/app/__init__.py:50]
+2021-07-30 13:55:40,039 INFO: Microblog startup [in /Users/artem/environments/website/app/__init__.py:50]
+2021-07-30 13:57:03,181 ERROR: Exception on /edit_profile [POST] [in /Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py:1892]
+Traceback (most recent call last):
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 1672, in _execute_context
+    dialect, self, conn, execution_options, *args, **kw
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/engine/default.py", line 1056, in _init_compiled
+    for key in positiontup
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/engine/default.py", line 1056, in <listcomp>
+    for key in positiontup
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/dialects/sqlite/base.py", line 1003, in process
+    "SQLite DateTime type only accepts Python "
+TypeError: SQLite DateTime type only accepts Python datetime and date objects as input.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1821, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/flask_login/utils.py", line 272, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/artem/environments/website/app/routes.py", line 83, in edit_profile
+    db.session.commit()
+  File "<string>", line 2, in commit
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/orm/session.py", line 1428, in commit
+    self._transaction.commit(_to_root=self.future)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/orm/session.py", line 829, in commit
+    self._prepare_impl()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/orm/session.py", line 808, in _prepare_impl
+    self.session.flush()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/orm/session.py", line 3298, in flush
+    self._flush(objects)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/orm/session.py", line 3438, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/util/langhelpers.py", line 72, in __exit__
+    with_traceback=exc_tb,
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/util/compat.py", line 207, in raise_
+    raise exception
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/orm/session.py", line 3398, in _flush
+    flush_context.execute()
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/orm/unitofwork.py", line 456, in execute
+    rec.execute(self)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/orm/unitofwork.py", line 633, in execute
+    uow,
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/orm/persistence.py", line 239, in save_obj
+    update,
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/orm/persistence.py", line 999, in _emit_update_statements
+    statement, multiparams, execution_options=execution_options
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 1583, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/sql/elements.py", line 324, in _execute_on_connection
+    self, multiparams, params, execution_options
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 1462, in _execute_clauseelement
+    cache_hit=cache_hit,
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 1678, in _execute_context
+    e, util.text_type(statement), parameters, None, None
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 1996, in _handle_dbapi_exception
+    sqlalchemy_exception, with_traceback=exc_info[2], from_=e
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/util/compat.py", line 207, in raise_
+    raise exception
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 1672, in _execute_context
+    dialect, self, conn, execution_options, *args, **kw
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/engine/default.py", line 1056, in _init_compiled
+    for key in positiontup
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/engine/default.py", line 1056, in <listcomp>
+    for key in positiontup
+  File "/Users/artem/environments/website/website/lib/python3.7/site-packages/sqlalchemy/dialects/sqlite/base.py", line 1003, in process
+    "SQLite DateTime type only accepts Python "
+sqlalchemy.exc.StatementError: (builtins.TypeError) SQLite DateTime type only accepts Python datetime and date objects as input.
+[SQL: UPDATE user SET username=?, about_me=? WHERE user.id = ?]
+[parameters: [{'username': '123', 'about_me': 'YOOOOOOOO', 'user_id': 1}]]
+2021-07-30 14:00:30,338 INFO: Microblog startup [in /Users/artem/environments/website/app/__init__.py:50]
