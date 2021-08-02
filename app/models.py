@@ -26,6 +26,7 @@ class User(UserMixin, db.Model):
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default = datetime.utcnow)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    resume_path = db.Column(db.String(120))
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),

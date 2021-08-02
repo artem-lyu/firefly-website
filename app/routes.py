@@ -4,9 +4,11 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, \
-    EmptyForm, PostForm, ResetPasswordRequestForm, ResetPasswordForm
+    EmptyForm, PostForm, ResetPasswordRequestForm, ResetPasswordForm, ResumeForm
 from app.models import User, Post
 from app.email import send_password_reset_email
+from werkzeug.utils import secure_filename
+import os
 
 
 @app.before_request
@@ -144,6 +146,8 @@ def user(username):
 def edit_profile():
     form = EditProfileForm(current_user.username)
     if form.validate_on_submit():
+        if form.upload_resume.data:
+            return redirect(url_for('upload_resume'))
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data
         db.session.commit()
@@ -155,6 +159,17 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
 
+@app.route('/edit_profile/upload_resume', methods=['GET','POST'])
+@login_required
+def upload_resume():
+    form = ResumeForm()
+    if form.validate_on_submit():
+        filename = secure_filename(form.resume.data.filename)
+        form.resume.data.save('app/uploads/' +  'resume_' + current_user.username)
+        current_user.resume_path = 'app/uploads/' +  'resume_' + current_user.username
+        flash('Your resume has been uploaded.')
+        return redirect(url_for('edit_profile'))
+    return render_template('upload_resume.html', title = 'Upload Resume', form=form)
 
 @app.route('/follow/<username>', methods=['POST'])
 @login_required
