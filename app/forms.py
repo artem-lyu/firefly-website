@@ -1,6 +1,9 @@
+from operator import length_hint
+from typing import Text
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
     TextAreaField
+from wtforms.fields.core import DateField, IntegerField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, \
     Length
 from flask_babel import _, lazy_gettext as _l
@@ -14,7 +17,7 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField(_l('Remember Me'))
     submit = SubmitField(_l('Sign In'))
 
-
+'''
 class RegistrationForm(FlaskForm):
     username = StringField(_l('Username'), validators=[DataRequired()])
     email = StringField(_l('Email'), validators=[DataRequired(), Email()])
@@ -34,6 +37,10 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError(_('Please use a different email address.'))
 
+'''
+class RegistrationForm(FlaskForm):
+    employee = SubmitField(_l('Employee'))
+    employer = SubmitField(_l('Employer'))
 
 class ResetPasswordRequestForm(FlaskForm):
     email = StringField(_l('Email'), validators=[DataRequired(), Email()])
@@ -54,7 +61,6 @@ class EditProfileForm(FlaskForm):
                              validators=[Length(min=0, max=140)])
     
     upload_resume = SubmitField('Upload Your Resume')
-    submit = SubmitField(_l('Submit'))
 
     def __init__(self, original_username, *args, **kwargs):
         super(EditProfileForm, self).__init__(*args, **kwargs)
@@ -77,3 +83,42 @@ class PostForm(FlaskForm):
 
 class ResumeForm(FlaskForm):
     resume = FileField('Upload')
+
+class EditProfileFormEmployee(EditProfileForm):
+    home_address = TextAreaField(_l('Home Address'), validators=[Length(min=0, max=140), DataRequired()])
+    date_birth = DateField(_l('Date of Birth'), validators=[DataRequired()], render_kw={"placeholder": "YYYY-MM-DD"})
+    location = TextAreaField(_l('City'), validators=[DataRequired(),Length(min=0, max=19)],)
+    submit = SubmitField(_l('Submit'))
+
+class RegistrationFormEveryone(FlaskForm):
+    username = StringField(_l('Username'), validators=[DataRequired()], render_kw={"placeholder": "Required"})
+    email = StringField(_l('Email'), validators=[DataRequired(), Email()], render_kw={"placeholder": "Required"})
+    password = PasswordField(_l('Password'), validators=[DataRequired()], render_kw={"placeholder": "Required"})
+    password2 = PasswordField(
+        _l('Repeat Password'), validators=[DataRequired(),
+                                           EqualTo('password')],render_kw={"placeholder": "Required"})
+    contact_phone = StringField(_l('Contact Number'), validators=[DataRequired()], render_kw={"placeholder": "Required"})
+    official_id = IntegerField(_l('Government ID Number'),validators=[DataRequired()], render_kw={"placeholder": "Required"})
+    name = StringField(_l('Name'), validators=[DataRequired()], render_kw={"placeholder": "Required"})
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None:
+            raise ValidationError(_('Please use a different username.'))
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is not None:
+            raise ValidationError(_('Please use a different email address.'))
+
+class RegistrationFormEmployee(RegistrationFormEveryone):
+    home_address = StringField(_l('Home Address'), validators=[Length(min=0, max=140), DataRequired()], render_kw={"placeholder": "Required"})
+    date_birth = DateField(_l('Date of Birth'), validators=[DataRequired()], render_kw={"placeholder": "YYYY-MM-DD"})
+    location = StringField(_l('City and Region'), validators=[DataRequired(),Length(min=0, max=19)],render_kw={"placeholder": "Required"})
+    submit = SubmitField(_l('Submit'))
+
+class RegistrationFormEmployer(RegistrationFormEveryone):
+    legal_person_name = StringField(_l('Legal Agent Name'), validators=[Length(min=0, max=20),DataRequired()], render_kw={"placeholder": "Required"})
+    legal_person_phone = StringField(_l('Legal Agent Contact Number'), validators=[Length(min=0, max=20),DataRequired()], render_kw={"placeholder": "Required"})
+    physical_address = StringField(_l('Company Address'), validators=[Length(min=0, max=14),DataRequired()], render_kw={"placeholder": "Required"})
+    submit = SubmitField(_l('Submit'))

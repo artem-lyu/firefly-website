@@ -3,9 +3,9 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, \
-    EmptyForm, PostForm, ResetPasswordRequestForm, ResetPasswordForm, ResumeForm
-from app.models import User, Post
+from app.forms import EditProfileFormEmployee, LoginForm, RegistrationForm, EditProfileForm, \
+    EmptyForm, PostForm, RegistrationFormEmployee, RegistrationFormEmployer, ResetPasswordRequestForm, ResetPasswordForm, ResumeForm
+from app.models import Employee, Employer, User, Post
 from app.email import send_password_reset_email
 from werkzeug.utils import secure_filename
 import os
@@ -79,7 +79,7 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/register', methods=['GET', 'POST'])
+'''@app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -91,8 +91,58 @@ def register():
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
+    return render_template('register.html', title='Register', form=form)'''
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = RegistrationForm()
+    if form.employee.data:
+        return redirect(url_for('register_employee'))
+    elif form.employer.data:
+        return redirect(url_for('register_employer'))
     return render_template('register.html', title='Register', form=form)
 
+@app.route('/register/employee', methods = ['GET','POST'])
+def register_employee():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = RegistrationFormEmployee()
+    if form.validate_on_submit():
+        user = Employee(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        user.date_birth = form.date_birth.data
+        user.location = form.location.data
+        user.home_address = form.home_address.data
+        user.name = form.name.data
+        user.contact_phone = form.contact_phone.data
+        user.official_id = form.official_id.data
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('login'))
+    return render_template('register_employee.html', title='Register', form=form)
+
+@app.route('/register/employer', methods = ['GET','POST'])
+def register_employer():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = RegistrationFormEmployer()
+    if form.validate_on_submit():
+        user = Employer(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        user.legal_person_name = form.legal_person_name.data
+        user.legal_person_phone = form.legal_person_phone.data
+        user.physical_address = form.physical_address.data
+        user.name = form.name.data
+        user.contact_phone = form.contact_phone.data
+        user.official_id = form.official_id.data
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('login'))
+    return render_template('register_employee.html', title='Register', form=form)
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
@@ -158,6 +208,28 @@ def edit_profile():
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
+
+@app.route('/edit_profile/employee', methods = ['GET', 'POST'])
+@login_required
+def edit_profile_employee():
+    form = EditProfileFormEmployee(current_user.username)
+    if form.validate_on_submit():
+        if form.upload_resume.data:
+            return redirect(url_for('upload_resume'))
+        current_user.username = form.username.data
+        current_user.about_me = form.about_me.data
+        current_user.home_address = form.home_address.data
+        current_user.date_birth = form.date_birth.data
+        current_user.location = form.location.data
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('edit_profile_employee'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.about_me.data = current_user.about_me
+    return render_template('edit_profile_employee.html', title='Edit Profile',
+                           form=form)
+        
 
 @app.route('/edit_profile/upload_resume', methods=['GET','POST'])
 @login_required

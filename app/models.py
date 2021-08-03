@@ -21,11 +21,12 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    contact_phone = db.Column(db.Integer, index = True)
+    contact_phone = db.Column(db.String(20), index = True)
     official_id = db.Column(db.Integer, index = True)
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default = datetime.utcnow)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    name = db.Column(db.String(20), index = True)
     resume_path = db.Column(db.String(120))
     followed = db.relationship(
         'User', secondary=followers,
@@ -86,13 +87,13 @@ class Employee(User):
     __tablename__ = "employees"
     number_jobs = db.Column(db.Integer, index = True)
     home_address = db.Column(db.String(120), index = True)
-    date_birth = db.Column(db.String(10))
+    date_birth = db.Column(db.DateTime)
     location = db.Column(db.String(20), index = True)
 
 class Employer(User):
     __tablename__ = "employers"
     legal_person_name = db.Column(db.String(10), index = True)
-    legal_person_phone = db.Column(db.Integer, index = True)
+    legal_person_phone = db.Column(db.String(20), index = True)
     physical_address = db.Column(db.String(100), index = True)
 
 class Post(db.Model):
@@ -100,7 +101,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     position_title = db.Column(db.String(30), index = True)
     location = db.Column(db.String(30), index = True)
-    contact_phone = db.Column(db.Integer, index = True)
+    contact_phone = db.Column(db.String(20), index = True)
     physical_address = db.Column(db.String(100), index = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     body = db.Column(db.String(140))
