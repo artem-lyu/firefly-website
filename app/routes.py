@@ -1,9 +1,10 @@
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request
+from flask.templating import render_template_string
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
-from app.forms import EditProfileFormEmployee, LoginForm, RegistrationForm, EditProfileForm, \
+from app.forms import EditProfileFormEmployee, LoginForm, PostFormEmployer, RegistrationForm, EditProfileForm, \
     EmptyForm, PostForm, RegistrationFormEmployee, RegistrationFormEmployer, ResetPasswordRequestForm, ResetPasswordForm, ResumeForm
 from app.models import Employee, Employer, User, Post
 from app.email import send_password_reset_email
@@ -22,6 +23,8 @@ def before_request():
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
+    if current_user == 'employers':
+        return redirect(url_for('index_employer'))
     form = PostForm()
     if form.validate_on_submit():
         post = Post(body=form.post.data, author=current_user)
@@ -40,6 +43,36 @@ def index():
                            posts=posts.items, next_url=next_url,
                            prev_url=prev_url)
 
+@app.route('/job_apply', methods=["POST"])
+@login_required
+def job_apply():
+    flash("You have successfully applied for this job!")
+    current_user.number_jobs +=1
+    db.session.commit()
+    return redirect(url_for('index'))
+
+
+
+@app.route("/index/employer", methods = ["GET", "POST"])
+@login_required
+def index_employer():
+    form = PostFormEmployer()
+    if form.validate_on_submit():
+        post = Post(position_title=form.position_title.data, author= current_user, contact_phone = form.contact_phone.data, physical_address = form.physical_address.data, body = form.body.data)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is now live!')
+        return redirect(url_for('index'))
+    page = request.args.get('page', 1, type=int)
+    posts = current_user.followed_posts().paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('index', page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('index', page=posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('index_employer.html', title='Home', form=form,
+                           posts=posts.items, next_url=next_url,
+                           prev_url=prev_url) 
 
 @app.route('/explore')
 @login_required
@@ -77,21 +110,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-
-'''@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)'''
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

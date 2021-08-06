@@ -2,7 +2,6 @@
         <tr>
             <td width="70px">
                 <a href="{{ url_for('user', username=post.author.username) }}">
-                    <img src="{{ post.author.avatar(70) }}" />
                 </a>
             </td>
             <td>
@@ -11,10 +10,14 @@
                         {{ post.author.username }}
                     </a>
                 {% endset %}
-                {{ _('%(username)s said %(when)s',
+                {{ _('%(username)s - %(when)s',
                     username=user_link, when=moment(post.timestamp).fromNow()) }}
+                <br><b>Job Title</b> - {{post.position_title}}
+                <br><b>Job Location</b> - {{post.physical_address}}
+                <br><b>Job Contact Number</b> - {{post.contact_phone}}
+                <br><b>Other Relevant Information</b> - {{ post.body }}
                 <br>
-                {{ post.body }}
+                <form action="{{ url_for('job_apply') }}" method="POST"><input type="submit" name="apply_button" value="Apply"></form>
             </td>
         </tr>
     </table>

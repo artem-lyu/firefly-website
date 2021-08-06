@@ -1,5 +1,6 @@
 from operator import length_hint
 from typing import Text
+from flask.app import Flask
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
     TextAreaField
@@ -76,6 +77,12 @@ class EditProfileForm(FlaskForm):
 class EmptyForm(FlaskForm):
     submit = SubmitField('Submit')
 
+class PostFormEmployer(FlaskForm):
+    position_title = StringField(_l('Job Title'), validators=[DataRequired(), Length(min=0, max=30)], render_kw={"placeholder": "Required"})
+    contact_phone = StringField(_l('Contact Number'), validators=[DataRequired(), Length(min=0, max=15)], render_kw={"placeholder": "Required"})
+    physical_address = StringField(_l('Job Location'), validators=[DataRequired(), Length(min=0, max = 100)], render_kw={"placeholder": "Required"})
+    body = TextAreaField(_l('Other Information and Requirements'), validators=[DataRequired(), Length(min=0,max=1000)])
+    submit = SubmitField(_l('Submit'))
 
 class PostForm(FlaskForm):
     post = TextAreaField(_l('Say something'), validators=[DataRequired()])

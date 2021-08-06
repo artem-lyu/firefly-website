@@ -100,11 +100,10 @@ class Post(db.Model):
     __tablename__ = "post"
     id = db.Column(db.Integer, primary_key=True)
     position_title = db.Column(db.String(30), index = True)
-    location = db.Column(db.String(30), index = True)
     contact_phone = db.Column(db.String(20), index = True)
     physical_address = db.Column(db.String(100), index = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    body = db.Column(db.String(140))
+    body = db.Column(db.String(1000))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
