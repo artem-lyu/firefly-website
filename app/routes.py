@@ -5,11 +5,13 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import EditProfileFormEmployee, LoginForm, PostFormEmployer, RegistrationForm, EditProfileForm, \
-    EmptyForm, PostForm, RegistrationFormEmployee, RegistrationFormEmployer, ResetPasswordRequestForm, ResetPasswordForm, ResumeForm
-from app.models import Employee, Employer, User, Post
+    EmptyForm, PostForm, RegistrationFormEmployee, RegistrationFormEmployer, ResetPasswordRequestForm, ResetPasswordForm, ResumeForm, MessageForm
+from app.models import Employee, Employer, User, Post, Message, Notification
 from app.email import send_password_reset_email
 from werkzeug.utils import secure_filename
 import os
+import json
+from flask import jsonify
 
 
 @app.before_request
@@ -47,11 +49,23 @@ def index():
 @login_required
 def job_apply():
     flash("You have successfully applied for this job!")
-    current_user.number_jobs +=1
+    user = Employee.query.filter_by(username=current_user.username).first()
+    current_post = Post.query.filter_by()
+    user.number_jobs += 1
     db.session.commit()
     return redirect(url_for('index'))
 
-
+@app.route('/like/<int:post_id>/<action>')
+@login_required
+def like_action(post_id, action):
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    if action == 'like':
+        current_user.like_post(post)
+        db.session.commit()
+    if action == 'unlike':
+        current_user.unlike_post(post)
+        db.session.commit()
+    return redirect(request.referrer)
 
 @app.route("/index/employer", methods = ["GET", "POST"])
 @login_required
@@ -136,6 +150,7 @@ def register_employee():
         user.name = form.name.data
         user.contact_phone = form.contact_phone.data
         user.official_id = form.official_id.data
+        user.number_jobs = 0
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
@@ -299,3 +314,51 @@ def unfollow(username):
         return redirect(url_for('user', username=username))
     else:
         return redirect(url_for('index'))
+
+@app.route('/messages')
+@login_required
+def messages():
+    current_user.last_message_read_time = datetime.utcnow()
+    current_user.add_notification('unread_message_count', 0)
+    db.session.commit()
+    current_user.last_message_read_time = datetime.utcnow()
+    db.session.commit()
+    page = request.args.get('page', 1, type=int)
+    messages = current_user.messages_received.order_by(
+        Message.timestamp.desc()).paginate(
+            page, app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('main.messages', page=messages.next_num) \
+        if messages.has_next else None
+    prev_url = url_for('main.messages', page=messages.prev_num) \
+        if messages.has_prev else None
+    return render_template('messages.html', messages=messages.items,
+                           next_url=next_url, prev_url=prev_url)
+
+
+@app.route('/notifications')
+@login_required
+def notifications():
+    since = request.args.get('since', 0.0, type=float)
+    notifications = current_user.notifications.filter(
+        Notification.timestamp > since).order_by(Notification.timestamp.asc())
+    return jsonify([{
+        'name': n.name,
+        'data': n.get_data(),
+        'timestamp': n.timestamp
+    } for n in notifications])
+
+@app.route('/send_message/<recipient>', methods=['GET', 'POST'])
+@login_required
+def send_message(recipient):
+    user = User.query.filter_by(username=recipient).first_or_404()
+    form = MessageForm()
+    if form.validate_on_submit():
+        msg = Message(author=current_user, recipient=user,
+                      body=form.message.data)
+        db.session.add(msg)
+        user.add_notification('unread_message_count', user.new_messages())
+        db.session.commit()
+        flash('Your message has been sent.')
+        return redirect(url_for('main.user', username=recipient))
+    return render_template('send_message.html', title='Send Message',
+                           form=form, recipient=recipient)

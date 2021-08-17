@@ -9,6 +9,11 @@
     {% endif %}
     {% for post in posts %}
         {% include '_post.html' %}
+        {% if current_user.has_liked_post(post) %}
+    <a href="{{ url_for('like_action', post_id=post.id, action='unlike') }}">Unlike</a>
+  {% else %}
+    <a href="{{ url_for('like_action', post_id=post.id, action='like') }}">Like</a>
+  {% endif %}
     {% endfor %}
     <nav aria-label="...">
         <ul class="pager">
