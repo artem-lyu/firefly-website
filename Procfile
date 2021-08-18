@@ -1,1 +1,1 @@
-web: flask db upgrade; gunicorn firefly:app
+web: flask db upgrade; gunicorn firefly-charity:app
