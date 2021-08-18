@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from flask.templating import render_template_string
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
@@ -25,15 +25,8 @@ def before_request():
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    if current_user == 'employers':
+    if current_user.is_employer:
         return redirect(url_for('index_employer'))
-    form = PostForm()
-    if form.validate_on_submit():
-        post = Post(body=form.post.data, author=current_user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your post is now live!')
-        return redirect(url_for('index'))
     page = request.args.get('page', 1, type=int)
     posts = current_user.followed_posts().paginate(
         page, app.config['POSTS_PER_PAGE'], False)
@@ -41,7 +34,7 @@ def index():
         if posts.has_next else None
     prev_url = url_for('index', page=posts.prev_num) \
         if posts.has_prev else None
-    return render_template('index.html', title='Home', form=form,
+    return render_template('index.html', title='Home',
                            posts=posts.items, next_url=next_url,
                            prev_url=prev_url)
 
@@ -59,11 +52,15 @@ def job_apply():
 @login_required
 def like_action(post_id, action):
     post = Post.query.filter_by(id=post_id).first_or_404()
+    post_author = User.query.filter_by(id=post.user_id).first()
+    firefly_id = User.query.filter_by(id=3).first()
     if action == 'like':
         current_user.like_post(post)
         db.session.commit()
-    if action == 'unlike':
-        current_user.unlike_post(post)
+        flash("You successfully have applied for this job!")
+        msg = Message(author=firefly_id, recipient=post_author, body="Someone has applied for your job! Their profile: Fireflycharity.artem-lyu.github.io/user/{}".format(current_user.username))
+        db.session.add(msg)
+        post_author.add_notification('unread_message_count', post_author.new_messages())
         db.session.commit()
     return redirect(request.referrer)
 
@@ -76,7 +73,7 @@ def index_employer():
         db.session.add(post)
         db.session.commit()
         flash('Your post is now live!')
-        return redirect(url_for('index'))
+        return redirect(url_for('explore'))
     page = request.args.get('page', 1, type=int)
     posts = current_user.followed_posts().paginate(
         page, app.config['POSTS_PER_PAGE'], False)
@@ -151,6 +148,7 @@ def register_employee():
         user.contact_phone = form.contact_phone.data
         user.official_id = form.official_id.data
         user.number_jobs = 0
+        user.is_employer = False
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
@@ -171,6 +169,7 @@ def register_employer():
         user.name = form.name.data
         user.contact_phone = form.contact_phone.data
         user.official_id = form.official_id.data
+        user.is_employer = True
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
@@ -191,6 +190,11 @@ def reset_password_request():
     return render_template('reset_password_request.html',
                            title='Reset Password', form=form)
 
+@app.route('/uploads/<path:filename>', methods=['GET', 'POST'])
+def download(filename):
+    uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+    filename = 'resume_' + filename + '.pdf'
+    return send_from_directory(directory=uploads, path=filename)
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
@@ -270,8 +274,8 @@ def upload_resume():
     form = ResumeForm()
     if form.validate_on_submit():
         filename = secure_filename(form.resume.data.filename)
-        form.resume.data.save('app/uploads/' +  'resume_' + current_user.username)
-        current_user.resume_path = 'app/uploads/' +  'resume_' + current_user.username
+        form.resume.data.save('app/uploads/' +  'resume_' + current_user.username + '.pdf')
+        current_user.resume_path = 'app/uploads/' +  'resume_' + current_user.username + '.pdf'
         flash('Your resume has been uploaded.')
         return redirect(url_for('edit_profile'))
     return render_template('upload_resume.html', title = 'Upload Resume', form=form)
@@ -321,15 +325,13 @@ def messages():
     current_user.last_message_read_time = datetime.utcnow()
     current_user.add_notification('unread_message_count', 0)
     db.session.commit()
-    current_user.last_message_read_time = datetime.utcnow()
-    db.session.commit()
     page = request.args.get('page', 1, type=int)
     messages = current_user.messages_received.order_by(
         Message.timestamp.desc()).paginate(
             page, app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('main.messages', page=messages.next_num) \
+    next_url = url_for('messages', page=messages.next_num) \
         if messages.has_next else None
-    prev_url = url_for('main.messages', page=messages.prev_num) \
+    prev_url = url_for('messages', page=messages.prev_num) \
         if messages.has_prev else None
     return render_template('messages.html', messages=messages.items,
                            next_url=next_url, prev_url=prev_url)
@@ -359,6 +361,7 @@ def send_message(recipient):
         user.add_notification('unread_message_count', user.new_messages())
         db.session.commit()
         flash('Your message has been sent.')
-        return redirect(url_for('main.user', username=recipient))
+        return redirect(url_for('user', username=recipient))
     return render_template('send_message.html', title='Send Message',
                            form=form, recipient=recipient)
+

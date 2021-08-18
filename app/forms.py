@@ -23,27 +23,6 @@ class MessageForm(FlaskForm):
         DataRequired(), Length(min=0, max=140)])
     submit = SubmitField(_l('Submit'))
 
-'''
-class RegistrationForm(FlaskForm):
-    username = StringField(_l('Username'), validators=[DataRequired()])
-    email = StringField(_l('Email'), validators=[DataRequired(), Email()])
-    password = PasswordField(_l('Password'), validators=[DataRequired()])
-    password2 = PasswordField(
-        _l('Repeat Password'), validators=[DataRequired(),
-                                           EqualTo('password')])
-    submit = SubmitField(_l('Register'))
-
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if user is not None:
-            raise ValidationError(_('Please use a different username.'))
-
-    def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
-        if user is not None:
-            raise ValidationError(_('Please use a different email address.'))
-
-'''
 class RegistrationForm(FlaskForm):
     employee = SubmitField(_l('Employee'))
     employer = SubmitField(_l('Employer'))
@@ -104,7 +83,7 @@ class EditProfileFormEmployee(EditProfileForm):
 
 class RegistrationFormEveryone(FlaskForm):
     username = StringField(_l('Username'), validators=[DataRequired()], render_kw={"placeholder": "Required"})
-    email = StringField(_l('Email'), validators=[DataRequired(), Email()], render_kw={"placeholder": "Required"})
+    email = StringField(_l('Email (Note: Your profile picture will be synced with Gravatar)'), validators=[DataRequired(), Email()], render_kw={"placeholder": "Required"})
     password = PasswordField(_l('Password'), validators=[DataRequired()], render_kw={"placeholder": "Required"})
     password2 = PasswordField(
         _l('Repeat Password'), validators=[DataRequired(),

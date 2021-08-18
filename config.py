@@ -14,3 +14,4 @@ class Config(object):
     ADMINS = ['fireflycharitybj@gmail.com']
     POSTS_PER_PAGE = 25
     LANGUAGES = ['en', 'zh_HANS_cn']
+    UPLOAD_FOLDER="uploads"

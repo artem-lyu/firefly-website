@@ -25,8 +25,14 @@ class User(UserMixin, db.Model):
         'PostLike',
         foreign_keys='PostLike.user_id',
         backref='employees', lazy='dynamic')
-
+    is_employer = db.Column(db.Boolean, index = True)
     password_hash = db.Column(db.String(128))
+    messages_sent = db.relationship('Message',
+                                    foreign_keys='Message.sender_id',
+                                    backref='author', lazy='dynamic')
+    messages_received = db.relationship('Message',
+                                        foreign_keys='Message.recipient_id',
+                                        backref='recipient', lazy='dynamic')
     contact_phone = db.Column(db.String(20), index = True)
     official_id = db.Column(db.Integer, index = True)
     about_me = db.Column(db.String(140))
@@ -116,7 +122,8 @@ class User(UserMixin, db.Model):
         self.notifications.filter_by(name=name).delete()
         n = Notification(name=name, payload_json=json.dumps(data), user=self)
         db.session.add(n)
-        return n       
+        return n
+     
 
 class PostLike(db.Model):
     __tablename__ = 'post_like'
